@@ -46,4 +46,7 @@ python refragment.py ./demo_data/step1_result.txt ./demo_data/step2_result.txt -
 ```
 
 ### 2.3 get molecular vector, nearest neighbor and class
-pass
+`
+python class_prediction.py ./big-data/s2_trained_model_molFrag2vec3.bin ./big-data/s2_trained_model_kmeans_model.pkl ./demo_data/step2_result.txt --result_fp ./demo_data/step3_mol_vec.csv --log_fn ./demo_data/step3_log.log
+`
+
