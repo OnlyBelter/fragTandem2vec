@@ -46,7 +46,24 @@ python refragment.py ./demo_data/step1_result.txt ./demo_data/step2_result.txt -
 ```
 
 ### 2.3 get molecular vector, nearest neighbor and class
-`
-python class_prediction.py ./big-data/s2_trained_model_molFrag2vec3.bin ./big-data/s2_trained_model_kmeans_model.pkl ./demo_data/step2_result.txt --result_fp ./demo_data/step3_mol_vec.csv --log_fn ./demo_data/step3_log.log
-`
 
+#### download following files from:
+
+- s2_trained_model_molFrag2vec3.bin: https://doi.org/10.6084/m9.figshare.11589477
+- s2_trained_model_kmeans_model.pkl: https://doi.org/10.6084/m9.figshare.11589477
+- mol2vec.csv: https://doi.org/10.6084/m9.figshare.11589870
+- pure_kmeans_class.csv: https://doi.org/10.6084/m9.figshare.11599773
+
+and save in directory: molFrag2vec/big-data/...
+
+```
+# only get molecular vectors
+python class_prediction.py ./big-data/s2_trained_model_molFrag2vec3.bin ./big-data/s2_trained_model_kmeans_model.pkl ./demo_data/step2_result.txt --result_dir ./demo_data --log_fn ./demo_data/step3_log.log
+
+# calculate nearest neighbors
+# need mol2vec.csv file, add by --training_mol_vec_fp parameter
+python class_prediction.py ./big-data/s2_trained_model_molFrag2vec3.bin ./big-data/s2_trained_model_kmeans_model.pkl ./demo_data/step2_result.txt --result_dir ./demo_data --log_fn ./demo_data/step3_log.log --training_mol_vec_fp ./big-data/mol2vec.csv --find_nearest_neighbors
+
+# predict class
+python class_prediction.py ./big-data/s2_trained_model_molFrag2vec3.bin ./big-data/s2_trained_model_kmeans_model.pkl ./demo_data/step2_result.txt --result_dir ./demo_data --log_fn ./demo_data/step3_log.log --pure_kmeans_class_fp ./big-data/pure_kmeans_class.csv --predict_class
+```
