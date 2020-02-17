@@ -13,12 +13,15 @@ git clone https://github.com/OnlyBelter/molFrag2vec.git
 - also see: [Building identical conda environments](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html#building-identical-conda-environments)
 ```
 cd /where/is/molFrag2vec/located
-conda create --name molFrag2vec --file spec-file.txt
+conda create --name molFrag2vec --file requirements.txt
 ```
 
 ### 1.3 activate environment just created
 ```
 conda activate molFrag2vec
+# install rdkit and mol2vec
+conda install -c rdkit rdkit==2019.03.3.0
+pip install git+https://github.com/samoturk/mol2vec
 ```
 
 ### 1.4 building fastText for Python
