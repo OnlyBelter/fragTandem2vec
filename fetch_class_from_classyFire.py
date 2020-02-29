@@ -118,7 +118,7 @@ if __name__ == '__main__':
     # cid_file = 'big-data/mol2class_pca_kmeans_1000.csv'
     cid_file = 'big-data/cid2class_classyfire/mol2vec/unique_in_mol2vec.csv'
     result_file = 'big-data/cid2class_classyfire/mol2vec/cid2InChIKey.txt'
-    result_file2 = 'big-data/cid2class_classyfire/mol2vec/cid2class_classyfire.txt'
+    result_file2 = 'big-data/cid2class_classyfire/mol2vec_related/cid2class_classyfire_part4.txt'
     # result_file_new = 'big-data/cid2class_classyfire_supply4.txt'
     # log_file = 'big-data/download_status_class.log'
 
@@ -144,7 +144,7 @@ if __name__ == '__main__':
         # if counter % 5 == 0:
         #     time.sleep(1)
             # print(i, cid2inchikey.loc[i])
-        if i > 3406:
+        if 90143 <= i:
         # super_class = cid2inchikey.loc[i, 2]
         # print(super_class)
         # if super_class == 'nan':

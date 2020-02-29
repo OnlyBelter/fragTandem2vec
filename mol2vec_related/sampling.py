@@ -35,11 +35,11 @@ def get_selected_mol(cid2smiles_path, sentences_path, sampled_id, cid_result_pat
 
 if __name__ == '__main__':
     sampled_id = sampling_from_train_set(100000)
-    cid2smiles_path = '../big-data/cid2smiles_training_set.txt'
-    sentences_path = '../big-data/cid2smiles_training_set_coupus.txt'
-    reuslt_path1 = '../big-data/cid2class_classyfire/mol2vec/selected_cid.tmp'
-    reuslt_path2 = '../big-data/cid2class_classyfire/mol2vec/selected_sentences.tmp'
-    reuslt_path3 = '../big-data/cid2class_classyfire/mol2vec/selected_cid2sentences.txt'
+    cid2smiles_path = '../big-data/cid2fragment/mol2vec/cid2smiles_training_set.txt'
+    sentences_path = '../big-data/cid2fragment/mol2vec/cid2smiles_training_set_coupus.txt'
+    reuslt_path1 = '../big-data/cid2class_classyfire/mol2vec_related/selected_cid.tmp'
+    reuslt_path2 = '../big-data/cid2class_classyfire/mol2vec_related/selected_sentences.tmp'
+    reuslt_path3 = '../big-data/cid2class_classyfire/mol2vec_related/selected_cid2sentences.txt'
     # get_selected_mol(cid2smiles_path=cid2smiles_path, sentences_path=sentences_path, sampled_id=sampled_id,
     #                  cid_result_path=reuslt_path1, sentence_result_path=reuslt_path2)
     selected_cid = pd.read_csv(reuslt_path1, sep='\t', header=None, index_col=0)

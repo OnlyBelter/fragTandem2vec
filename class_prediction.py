@@ -173,7 +173,7 @@ if __name__ == '__main__':
         # print('>>>')
         training_mol_vec_fp = args.training_mol_vec_fp
         if not training_mol_vec_fp:
-            print('  Error: need to add the file path of "mol2vec.csv" by parameter --training_mol_vec_fp')
+            print('  Error: need to add the file path of "mol2vec_related.csv" by parameter --training_mol_vec_fp')
             raise FileNotFoundError
         with open(result_fp_nn, 'w') as handle:
             handle.write('\t'.join(['CID', 'nearest_neighbors']) + '\n')

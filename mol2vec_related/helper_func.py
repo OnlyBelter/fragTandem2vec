@@ -1,20 +1,21 @@
+"""
+helper function for mol2vec_related
+"""
 from tqdm import tqdm
-import numpy as np
 import pandas as pd
 from rdkit import Chem
 from rdkit.Chem import AllChem
-from rdkit.Chem import PandasTools
-from gensim.models import word2vec
-import timeit
+import datetime
 from joblib import Parallel, delayed
-from mol2vec.features import generate_corpus, train_word2vec_model
+from gensim.models import word2vec
+from mol2vec.features import generate_corpus, train_word2vec_model, mol2alt_sentence, mol2sentence, MolSentence, DfVec, sentences2vec
 
 
 def get_cid2smiles(cid2smiles, cid_list, result_file):
     """
     get cid2smiles in training set
     :param cid2smiles: file path, cid, smiles
-    :param train_set: file path
+    :param cid_list： file path of cid list in train_set
     :param result_file: file path of result
     :return:
     """
@@ -169,22 +170,60 @@ def insert_unk(corpus, out_corpus, threshold=3, uncommon='UNK'):
     fw.close()
 
 
+def count_fragment(cid2frag_fp):
+    """
+    count fragment in all training set
+    :param cid2frag_fp: cid2fragment file path, i.e. step2_result file
+    :return:
+    """
+    frag2num = {}
+    with open(cid2frag_fp, 'r') as f_handle:
+        counter = 0
+        for i in f_handle:
+            if counter % 500000 == 0:
+                t = datetime.datetime.now()
+                print('>>> Current line: {}'.format(counter), t.strftime("%c"))
+            cid, sentence = i.strip().split('\t')
+            frags = sentence.split(',')
+            for frag in frags:
+                if frag not in frag2num:
+                    frag2num[frag] = 0
+                frag2num[frag] += 1
+            counter += 1
+    frag2num_df = pd.DataFrame.from_dict(frag2num, orient='index')
+    frag2num_df.sort_values(by=0, inplace=True, ascending=False)
+    frag2num_df.reset_index(inplace=True)
+    frag2num_df.rename(columns={0: 'count', 'index': 'fragment'}, inplace=True)
+    return frag2num_df
+
+
+def load_trained_model(model_fp):
+    """
+    load well-trained model by following function
+    train_word2vec_model('./mols_demo_corpus.txt', outfile_name='mols_demo_model.pkl',
+                          vector_size=150, window=10, min_count=3, n_jobs=2, method='skip-gram')
+    :param model_fp:
+    :return:
+    """
+    model = word2vec.Word2Vec.load(model_fp)
+    return model
 
 
 if __name__ == '__main__':
     # cid2smiles = '../big-data/all_cid2smiles/all_data_set_CID2Canonical_SMILES.txt'
     # cid_list = '../big-data/all_cid2smiles/step5_x_training_set.csv'
-    reuslt_file_path1 = '../big-data/cid2smiles_training_set.txt'
-    reuslt_file_path2 = '../big-data/cid2smiles_training_set_coupus.tmp'
-    reuslt_file_path3 = '../big-data/cid2smiles_training_set_coupus.txt'
+    reuslt_file_path1 = '../big-data/cid2fragment/mol2vec/cid2smiles_training_set.txt'
+    reuslt_file_path2 = '../big-data/cid2fragment/mol2vec/cid2smiles_training_set_coupus.tmp'
+    reuslt_file_path3 = '../big-data/cid2fragment/mol2vec/cid2smiles_training_set_coupus.txt'
     cid2smiles_test = '../big-data/cid2smiles_test.txt'
+    reuslt_file_path4 = '../big-data/vectors/mol2vec_model_mol2vec.csv'
     # get_cid2smiles(cid2smiles, cid_list, result_file=reuslt_file_path1)
 
     # step1 generate corpus (sentence)
-    # generate_corpus_from_smiles(in_file=reuslt_file_path1, out_file=reuslt_file_path2, r=1, n_jobs=4)
+    generate_corpus_from_smiles(in_file=reuslt_file_path1, out_file=reuslt_file_path2, r=1, n_jobs=4)
 
     # step2 Handling of uncommon "words"
-    # insert_unk(corpus=reuslt_file_path2, out_corpus=reuslt_file_path3)
+    insert_unk(corpus=reuslt_file_path2, out_corpus=reuslt_file_path3)
 
     # step3 train molecule vector
     train_word2vec_model(infile_name=reuslt_file_path3, outfile_name='../big-data/mol2vec_model.pkl',
