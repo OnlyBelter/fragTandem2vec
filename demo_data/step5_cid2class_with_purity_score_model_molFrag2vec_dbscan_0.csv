@@ -1,0 +1,72 @@
+,max,superclass_name,total,purity_score
+2,31,Phenylpropanoids and polyketides,31,1.0
+4,21,Phenylpropanoids and polyketides,21,1.0
+5,83,Phenylpropanoids and polyketides,83,1.0
+13,11,Phenylpropanoids and polyketides,11,1.0
+14,43,Phenylpropanoids and polyketides,43,1.0
+16,65,Phenylpropanoids and polyketides,65,1.0
+21,11,Phenylpropanoids and polyketides,11,1.0
+44,10,Phenylpropanoids and polyketides,10,1.0
+63,14,Organoheterocyclic compounds,14,1.0
+66,16,Organic acids and derivatives,16,1.0
+18,23,Lipids and lipid-like molecules,23,1.0
+26,14,Lipids and lipid-like molecules,14,1.0
+29,12,Lipids and lipid-like molecules,12,1.0
+56,10,"Lignans, neolignans and related compounds",10,1.0
+46,12,Alkaloids and derivatives,12,1.0
+65,168,Organic acids and derivatives,169,0.9940828402366864
+15,44,Phenylpropanoids and polyketides,45,0.9777777777777777
+64,26,Organoheterocyclic compounds,27,0.9629629629629629
+10,22,Organic oxygen compounds,23,0.9565217391304348
+23,40,Phenylpropanoids and polyketides,42,0.9523809523809523
+42,18,"Lignans, neolignans and related compounds",19,0.9473684210526315
+30,17,Phenylpropanoids and polyketides,18,0.9444444444444444
+7,13,Phenylpropanoids and polyketides,14,0.9285714285714286
+9,12,Phenylpropanoids and polyketides,13,0.9230769230769231
+36,12,"Nucleosides, nucleotides, and analogues",13,0.9230769230769231
+68,11,Organic acids and derivatives,12,0.9166666666666666
+20,80,Organosulfur compounds,88,0.9090909090909091
+35,9,Organic nitrogen compounds,10,0.9
+51,8,Phenylpropanoids and polyketides,9,0.8888888888888888
+52,24,Organoheterocyclic compounds,27,0.8888888888888888
+49,24,Lipids and lipid-like molecules,27,0.8888888888888888
+47,39,Organic acids and derivatives,44,0.8863636363636364
+17,58,Organic nitrogen compounds,66,0.8787878787878788
+6,28,Organic oxygen compounds,32,0.875
+8,49,Organic oxygen compounds,57,0.8596491228070176
+37,17,Phenylpropanoids and polyketides,20,0.85
+41,32,"Nucleosides, nucleotides, and analogues",38,0.8421052631578947
+1,180,Phenylpropanoids and polyketides,218,0.8256880733944955
+24,37,Phenylpropanoids and polyketides,45,0.8222222222222222
+50,18,Benzenoids,22,0.8181818181818182
+34,29,Phenylpropanoids and polyketides,36,0.8055555555555556
+69,8,Organic acids and derivatives,10,0.8
+32,8,Organosulfur compounds,11,0.7272727272727273
+61,8,Organic acids and derivatives,11,0.7272727272727273
+31,9,Phenylpropanoids and polyketides,13,0.6923076923076923
+57,9,Benzenoids,13,0.6923076923076923
+60,11,Organoheterocyclic compounds,16,0.6875
+43,11,Lipids and lipid-like molecules,17,0.6470588235294118
+55,7,Phenylpropanoids and polyketides,11,0.6363636363636364
+25,42,"Nucleosides, nucleotides, and analogues",66,0.6363636363636364
+40,8,Benzenoids,13,0.6153846153846154
+48,12,Organic acids and derivatives,20,0.6
+59,10,Organoheterocyclic compounds,17,0.5882352941176471
+62,18,Organoheterocyclic compounds,31,0.5806451612903226
+38,37,Benzenoids,66,0.5606060606060606
+54,5,Organoheterocyclic compounds,10,0.5
+33,6,"Nucleosides, nucleotides, and analogues",12,0.5
+27,9,Organic oxygen compounds,19,0.47368421052631576
+39,8,Phenylpropanoids and polyketides,17,0.47058823529411764
+45,3,Lipids and lipid-like molecules,7,0.42857142857142855
+12,9,Benzenoids,21,0.42857142857142855
+28,7,Organoheterocyclic compounds,17,0.4117647058823529
+22,38,Organoheterocyclic compounds,94,0.40425531914893614
+67,4,Organic oxygen compounds,10,0.4
+58,4,Phenylpropanoids and polyketides,11,0.36363636363636365
+53,7,Benzenoids,20,0.35
+19,21,Organoheterocyclic compounds,63,0.3333333333333333
+11,3,Organic acids and derivatives,9,0.3333333333333333
+3,19,Phenylpropanoids and polyketides,63,0.30158730158730157
+-1,3643,Organoheterocyclic compounds,14904,0.24443102522812668
+0,3463,Organic acids and derivatives,16506,0.20980249606203805

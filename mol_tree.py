@@ -1,9 +1,14 @@
+"""
+The first step: generate molecular tree based on https://github.com/wengong-jin/icml18-jtnn
+Then we can get the fragments of each molecule and the relation between each two fragments
+# usage:
+$ python mol_tree.py demo_data/demo_dataset.txt demo_data/step1_result.txt --log_fn demo_data/step1_log.log
+"""
 from __future__ import print_function
 import rdkit
 import rdkit.Chem as Chem
 from chemutils import get_clique_mol, tree_decomp, get_mol, get_smiles, set_atommap, enum_assemble
 from pub_func import if_only_main_element
-import os
 import json
 import argparse
 

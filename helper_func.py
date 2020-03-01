@@ -2,8 +2,7 @@
 helper function for molFrag2vec
 """
 
-
-import json
+import datetime
 import os
 import numpy as np
 import pandas as pd
@@ -199,6 +198,91 @@ def get_mol_vec(frag2vec, data_set, result_path):
     # the last part
     pid2vec_df = pd.DataFrame.from_dict(cid2vec, orient='index')
     pid2vec_df.to_csv(result_path, mode='a', header=False, float_format='%.3f')
+
+
+def count_fragment(cid2frag_fp):
+    """
+    count fragment in all training set
+    :param cid2frag_fp: cid2fragment file path, i.e. step2_result file
+    :return:
+    """
+    frag2num = {}
+    with open(cid2frag_fp, 'r') as f_handle:
+        counter = 0
+        for i in f_handle:
+            if counter % 500000 == 0:
+                t = datetime.datetime.now()
+                print('>>> Current line: {}'.format(counter), t.strftime("%c"))
+            cid, sentence = i.strip().split('\t')
+            frags = sentence.split(',')
+            for frag in frags:
+                if frag not in frag2num:
+                    frag2num[frag] = 0
+                frag2num[frag] += 1
+            counter += 1
+    frag2num_df = pd.DataFrame.from_dict(frag2num, orient='index')
+    frag2num_df.sort_values(by=0, inplace=True, ascending=False)
+    frag2num_df.reset_index(inplace=True)
+    frag2num_df.rename(columns={0: 'count', 'index': 'fragment'}, inplace=True)
+    return frag2num_df
+
+
+def replace_smiles_by_frag_id(frag2num_fp, cid2frag_fp, result_fp, result_fp2):
+    """
+    replace SMILES of fragment by fragment id for saving storage space
+    :param frag2num_fp: file path of fragment to number, frag_id,fragment(SMILES),count
+    :param cid2frag_fp: file path of cid to sentence (fragments)
+    :param result_fp: file path of cid to fragment id
+    :param result_fp2: file path of fragment id sentence (separated by space)
+    :return:
+    """
+    frag2num = pd.read_csv(frag2num_fp, index_col='fragment')
+    frag2id = frag2num['frag_id'].to_dict()  # a dict of mapping fragment SMILES to fragment id
+
+    with open(cid2frag_fp, 'r') as f_handle:
+        counter = 0
+        for i in f_handle:
+            if counter % 500000 == 0:
+                t = datetime.datetime.now()
+                print('>>> Current line: {}'.format(counter), t.strftime("%c"))
+            cid, sentence = i.strip().split('\t')
+            frags = sentence.split(',')
+            frags_id = [str(frag2id[f]) for f in frags]
+            with open(result_fp, 'a') as f_handle2:
+                f_handle2.write(cid + '\t' + ','.join(frags_id) + '\n')
+            with open(result_fp2, 'a') as f_handle3:
+                f_handle3.write(' '.join(frags_id) + '\n')
+            counter += 1
+
+
+def get_sentence_by_cid(cid2sentence, cid_list, result_file, result_file2):
+    """
+    get cid2smiles in training set
+    :param cid2sentence: file path, cid, sentence. step2_result
+    :param cid_list： file path of cid list in train_set
+    :param result_file: file path of result, cid2sentence which has same order as cid_list
+    :param result_file2: only sentence (fragment id)
+    :return:
+    """
+    cid2frag_id_dict = {}
+    with open(cid2sentence, 'r') as f_handle:
+        for i in f_handle:
+            i = i.strip()
+            cid, frag_ids = i.split('\t')
+            cid2frag_id_dict[cid] = frag_ids
+    with open(cid_list, 'r') as f_handle2:
+        for i in f_handle2:
+            i = i.strip()
+            cid = i.split('\t')[0]
+            if cid in cid2frag_id_dict:
+                with open(result_file, 'a') as r_handle:
+                    r_handle.write(cid + '\t' + cid2frag_id_dict[cid] + '\n')
+                with open(result_file2, 'a') as r_handle2:
+                    r_handle2.write(' '.join(cid2frag_id_dict[cid].split(',')) + '\n')
+            else:
+                print('>>> this compound {} does not exist in our cid2smiles list...'.format(cid))
+
+
 
 
 if __name__ == '__main__':

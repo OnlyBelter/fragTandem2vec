@@ -3,6 +3,8 @@ import pandas as pd
 import pickle
 import numpy as np
 from sklearn.mixture import BayesianGaussianMixture
+import argparse
+import os
 
 
 def load_mol_vec(cid2vec_fp):
@@ -91,19 +93,46 @@ def compare_two_model(model_name, result_fp, n_repeat=10):
 
 
 if __name__ == '__main__':
-    model_name = 'mol2vec'
-    cluster_model = 'dbscan'
-    n_repeat = 1
+    # result_dir = './demo_data'
+    # download_big_data_dir = './big-data'
+    # include_small_dataset_dir = './dataset'
+    # result_fp = os.path.join(result_dir, 'step4_selected_cid2fragment_down_sampled_model_mol2vec.csv')
+    # result_fp2 = os.path.join(result_dir, 'step4_selected_cid2fragment_down_sampled_model_molFrag2vec.csv')
+    # selected_cid_fp = os.path.join(include_small_dataset_dir, 'down_sampled_cid2class_unique.csv')
 
-    # step 1: training KMeans cluster model
-    mol2vec_fp = './big-data/vectors/mol2vec_model_{}.csv'.format(model_name)
-    cid2class_classyfire = pd.read_csv('./big-data/cid2class_classyfire/down_sampled_cid2class_unique.csv', index_col='CID')
+    parser = argparse.ArgumentParser(
+        description='Training molFrag2vec model using FastText')
+    parser.add_argument('input_dir',
+                        help='the directory of molecular vector files')
+    parser.add_argument('result_dir',
+                        help='where to save trained model')
+    parser.add_argument('--include_small_dataset_dir', help='directory of included small dataset')
+    parser.add_argument('--model', help='which model, molFrag2vec or mol2vec?')
+    parser.add_argument('--cluster_method', default='dbscan', help='the method of clustering')
+    parser.add_argument('--repeat', default=1, help='how many times to do clustering')
+    args = parser.parse_args()
+    input_dir = args.input_dir
+    result_dir = args.result_dir
+    include_small_dataset_dir = args.include_small_dataset_dir
+
+    model_name = args.model
+    cluster_method = args.cluster_method
+    n_repeat = args.repeat
+    cid2class_classyfire = pd.read_csv(os.path.join(include_small_dataset_dir,
+                                                    'down_sampled_cid2class_unique.csv'), index_col='CID')
+
+    # cid2class_classyfire = pd.read_csv('./big-data/cid2class_classyfire/down_sampled_cid2class_unique.csv', index_col='CID')
+
+    # step 1: training clustering model
+    mol2vec_fp = os.path.join(input_dir, 'step4_selected_mol2vec_model_{}.csv'.format(model_name))
+    # mol2vec_fp = './big-data/vectors/mol2vec_model_{}.csv'.format(model_name)
     x = load_mol_vec(mol2vec_fp)
     for i in range(n_repeat):
         print('>>> {}'.format(i))
-        model_path = './big-data/trained_model/{}/{}_model_{}_{}_new.pkl'.format(model_name, cluster_model, model_name, i)
-        cid2class_fp = './big-data/cid2class_predicted/{}/cid2class_model_{}_{}.csv'.format(model_name, model_name, i)
-        predicted_class = cluster_predict(mol_vec_x=x, n_clusters=100, model_path=model_path, cluster_model=cluster_model)
+        model_path = os.path.join(result_dir,
+                                  'step5_{}_model_{}_{}.pkl'.format(cluster_method, model_name, i))
+        cid2class_fp = os.path.join(result_dir, 'step5_cid2class_model_{}_{}_{}.csv'.format(model_name, cluster_method, i))
+        predicted_class = cluster_predict(mol_vec_x=x, n_clusters=100, model_path=model_path, cluster_model=cluster_method)
         x['predicted_class'] = predicted_class
         cid2class = cid2class_classyfire.merge(x, left_index=True, right_index=True)
         cid2class.to_csv(cid2class_fp, index_label='CID', columns=['superclass', 'predicted_class'])
@@ -111,11 +140,14 @@ if __name__ == '__main__':
     # step2: calculate purity score
     for i in range(n_repeat):
         print('>>> {}'.format(i))
-        cid2class_fp = './big-data/cid2class_predicted/{}/cid2class_model_{}_{}.csv'.format(model_name, model_name, i)
-        result_fp = './big-data/purity_score/{}/cid2class_with_purity_score_{}.csv'.format(model_name, i)
+        cid2class_fp = os.path.join(result_dir,
+                                    'step5_cid2class_model_{}_{}_{}.csv'.format(model_name, cluster_method, i))
+        result_fp = os.path.join(result_dir,
+                                 'step5_cid2class_with_purity_score_model_{}_{}_{}.csv'.format(model_name, cluster_method, i))
         cid2class_with_purity_score = calculate_purity_score(cid2class_fp)
+        cid2class_with_purity_score.sort_values(by=['purity_score', 'superclass_name'], inplace=True, ascending=False)
         cid2class_with_purity_score.to_csv(result_fp)
 
-    # step3: comparing tow models
-    result_fp = './big-data/purity_score/superclass_in_pure_cluster_{}_new.csv'.format(model_name)
-    compare_two_model(model_name=model_name, result_fp=result_fp, n_repeat=n_repeat)
+    # step3: comparing two models
+    result_fp2 = os.path.join(result_dir, 'step5_superclass_in_pure_cluster_{}.csv'.format(model_name))
+    compare_two_model(model_name=model_name, result_fp=result_fp2, n_repeat=n_repeat)

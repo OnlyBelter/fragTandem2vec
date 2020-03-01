@@ -342,7 +342,7 @@ class Mol2Network:
         :return:
         """
         end_pairs = self._get_end_pairs()  # get end point pairs
-        longest_path = None
+        paths_with_attr = []  # with attribute
         all_paths = []
         num_node_longest_path = 0
         num_max_path_neighbors = 0
@@ -354,7 +354,7 @@ class Mol2Network:
                 shortest_path = list(shortest_path)[0]
                 num_neig = self.count_neighbors(shortest_path)
                 num_atoms = np.sum([get_num_atom_by_smiles(self.id2smiles[i]) for i in shortest_path])
-                all_paths.append({'path': shortest_path, 'len_path': len(shortest_path),
+                paths_with_attr.append({'path': shortest_path, 'len_path': len(shortest_path),
                                   'num_neig': num_neig, 'num_atoms': num_atoms})
                 # print(shortest_path)
                 if len(shortest_path) > num_node_longest_path:
@@ -363,15 +363,13 @@ class Mol2Network:
                     num_max_path_neighbors = num_neig
                 # if num_atoms > num_max_atom_in_path:
                 #     num_max_atom_in_path = num_atoms
-            all_paths = sorted(all_paths, key=itemgetter('num_atoms'), reverse=True)
-            all_paths = sorted(all_paths, key=itemgetter('num_neig'), reverse=True)  # test data LINE 401
-            for path in all_paths:
-                if path['len_path'] == num_node_longest_path:
-                    longest_path = path['path']
-                    break
+            paths_with_attr = sorted(paths_with_attr, key=itemgetter('num_atoms'), reverse=True)
+            paths_with_attr = sorted(paths_with_attr, key=itemgetter('num_neig'), reverse=True)  # test data LINE 401
+            for path in paths_with_attr:
+                all_paths.append(path['path'])
         if len(self.n2n) == 1:  # only one node in all graph, test data LINE 546
-            longest_path = list(self.n2n.keys())
-        return longest_path
+            all_paths = list(self.n2n.keys())
+        return all_paths
 
     def get_id2node(self, mol_path, id2smile, id2mol_inx):
         """

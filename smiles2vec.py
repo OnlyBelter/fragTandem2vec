@@ -62,44 +62,47 @@ def get_fragment_by_cid(selected_cid_fp, all_train_cid_fp, fragment_fp, result_f
 
 
 if __name__=='__main__':
-    root_dir = './big-data/cid2fragment'
-    result_fp = os.path.join(root_dir, 'mol2vec', 'selected_cid2fragment_down_sampled.csv')
-    result_fp2 = os.path.join(root_dir, 'molFrag2vec', 'selected_cid2fragment_down_sampled_new.csv')
-    selected_cid_fp = './big-data/cid2class_classyfire/down_sampled_cid2class_unique.csv'
+    result_dir = './demo_data'
+    download_big_data_dir = './big-data'
+    include_small_dataset_dir = './dataset'
+    result_fp = os.path.join(result_dir, 'step4_selected_cid2fragment_down_sampled_model_mol2vec.csv')
+    result_fp2 = os.path.join(result_dir, 'step4_selected_cid2fragment_down_sampled_model_molFrag2vec.csv')
+    selected_cid_fp = os.path.join(include_small_dataset_dir, 'down_sampled_cid2class_unique.csv')
 
-    # # get fragments of selected molecule in mol2vec
-    # print(os.path.abspath(os.getcwd()))
-    # print(os.path.exists(selected_cid_fp))
-    # all_train_cid_fp = os.path.join(root_dir, 'mol2vec', 'cid2smiles_training_set.txt')
-    # all_fragment_fp = os.path.join(root_dir, 'mol2vec', 'cid2smiles_training_set_coupus.txt')
-    # get_fragment_by_cid(selected_cid_fp=selected_cid_fp, all_train_cid_fp=all_train_cid_fp,
-    #                     fragment_fp=all_fragment_fp, result_fp=result_fp)
+    # get fragments of selected molecule in mol2vec
+    print(os.path.abspath(os.getcwd()))
+    print(os.path.exists(selected_cid_fp))
+    all_train_cid_fp = os.path.join(download_big_data_dir, 'cid2fragment', 'mol2vec', 'cid2smiles_training_set.txt')
+    all_fragment_fp = os.path.join(download_big_data_dir, 'cid2fragment', 'mol2vec', 'cid2smiles_training_set_coupus.txt')
+    get_fragment_by_cid(selected_cid_fp=selected_cid_fp, all_train_cid_fp=all_train_cid_fp,
+                        fragment_fp=all_fragment_fp, result_fp=result_fp)
 
     # get fragments of selected in molFrag2vec
     # selected_cid_fp = './big-data/cid2class_classyfire/down_sampled_cid2class_unique.csv'
-    all_train_cid_fp = os.path.join(root_dir, 'molFrag2vec', 'x_training_set_cid2_sentence_new.csv')
-    all_fragment_fp = os.path.join(root_dir, 'molFrag2vec', 'x_training_set_sentence_new.csv')
-    get_fragment_by_cid(selected_cid_fp=selected_cid_fp, all_train_cid_fp=all_train_cid_fp,
-                        fragment_fp=all_fragment_fp, result_fp=result_fp2)
+    all_train_cid_fp2 = os.path.join(download_big_data_dir, 'cid2fragment', 'molFrag2vec', 'x_training_set_cid2_sentence_new.csv')
+    all_fragment_fp2 = os.path.join(download_big_data_dir, 'cid2fragment', 'molFrag2vec', 'x_training_set_sentence_new.csv')
+    get_fragment_by_cid(selected_cid_fp=selected_cid_fp, all_train_cid_fp=all_train_cid_fp2,
+                        fragment_fp=all_fragment_fp2, result_fp=result_fp2)
 
     # get vector of each molecule by molFrag2vec model
-    frag2vec_file = os.path.join('big-data', 'frag2vec_model_molFrag2vec_new.csv')
+    frag2vec_file = os.path.join(include_small_dataset_dir, 'molFrag2vec_related', 'frag2vec_model_molFrag2vec_new.csv')
     training_set_file = result_fp2
-    result_file = os.path.join('big-data', 'vectors', 'mol2vec_model_molFrag2vec_new.csv')
+    result_file = os.path.join(result_dir, 'step4_selected_mol2vec_model_molFrag2vec.csv')
     get_mol_vec(frag2vec=frag2vec_file, data_set=training_set_file, result_path=result_file)
 
-    # # get vector of each molecule by mol2vec model
-    # mol_info = pd.read_csv('./big-data/cid2fragment/mol2vec/selected_cid2fragment_down_sampled.csv', index_col='cid')
-    # model_fp = './big-data/trained_model/mol2vec_model.pkl'
-    # model = load_trained_model(model_fp)
-    # # print(mol_info.loc[4568802, '0'])
-    # mol_info['sentence'] = mol_info.apply(lambda x: MolSentence([str(i) for i in x['0'].split(' ')]), axis=1)
-    # # print(mol_info)
-    # mol_info['mol2vec_related'] = [DfVec(x) for x in sentences2vec(mol_info['sentence'], model)]
-    # cid2vec = {}
-    # for cid in mol_info.index.to_list():
-    #     cid2vec[cid] = list(mol_info.loc[cid, 'mol2vec_related'].vec)
-    # cid2vec_df = pd.DataFrame.from_dict(cid2vec, orient='index')
-    # print(cid2vec_df.shape)
-    # result_file2 = os.path.join('big-data', 'vectors', 'mol2vec_model_mol2vec.csv')
-    # cid2vec_df.to_csv(result_file2, header=False, float_format='%.3f')
+    # get vector of each molecule by mol2vec model
+    mol_info = pd.read_csv(os.path.join(include_small_dataset_dir, 'mol2vec_related',
+                                        'selected_cid2fragment_down_sampled_model_mol2vec.csv'), index_col='cid')
+    model_fp = os.path.join(include_small_dataset_dir, 'mol2vec_related', 'mol2vec_model.pkl')
+    model = load_trained_model(model_fp)
+    # print(mol_info.loc[4568802, '0'])
+    mol_info['sentence'] = mol_info.apply(lambda x: MolSentence([str(i) for i in x['0'].split(' ')]), axis=1)
+    # print(mol_info)
+    mol_info['mol2vec_related'] = [DfVec(x) for x in sentences2vec(mol_info['sentence'], model)]
+    cid2vec = {}
+    for cid in mol_info.index.to_list():
+        cid2vec[cid] = list(mol_info.loc[cid, 'mol2vec_related'].vec)
+    cid2vec_df = pd.DataFrame.from_dict(cid2vec, orient='index')
+    print(cid2vec_df.shape)
+    result_file2 = os.path.join(result_dir, 'step4_selected_mol2vec_model_mol2vec.csv')
+    cid2vec_df.to_csv(result_file2, header=False, float_format='%.3f')
