@@ -81,7 +81,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
         description='molecule fragment by tree decomposition')
     parser.add_argument('input_fn',
-                        help='training set file path')
+                        help='file path of molecular fragments information from the first step, '
+                             'which contains cid/smiles/frag_id2smiles/frag_id2neighbors/frag_id2mol_inx')
     parser.add_argument('result_dir',
                         help='result directory')
     parser.add_argument('--log_fn',

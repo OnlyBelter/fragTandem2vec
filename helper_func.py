@@ -257,7 +257,7 @@ def replace_smiles_by_frag_id(frag2num_fp, cid2frag_fp, result_fp, result_fp2):
 
 def get_sentence_by_cid(cid2sentence, cid_list, result_file, result_file2):
     """
-    get cid2smiles in training set
+    get cid2smiles.txt in training set
     :param cid2sentence: file path, cid, sentence. step2_result
     :param cid_list： file path of cid list in train_set
     :param result_file: file path of result, cid2sentence which has same order as cid_list
@@ -280,7 +280,7 @@ def get_sentence_by_cid(cid2sentence, cid_list, result_file, result_file2):
                 with open(result_file2, 'a') as r_handle2:
                     r_handle2.write(' '.join(cid2frag_id_dict[cid].split(',')) + '\n')
             else:
-                print('>>> this compound {} does not exist in our cid2smiles list...'.format(cid))
+                print('>>> this compound {} does not exist in our cid2smiles.txt list...'.format(cid))
 
 
 

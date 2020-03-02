@@ -124,10 +124,12 @@ def find_nn(training_mol_vec_fp, query_mol_vec_df, top_n):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='molecule class prediction and finding nearest neighbors')
-    parser.add_argument('frag_vec_model_fp', help='file path of trained fragment vector model')
-    parser.add_argument('kmeans_model_fp', help='file path of trained kmeans model')
-    parser.add_argument('input_fp', help='file path of step2 result')
-    parser.add_argument('--training_mol_vec_fp', default='', help='file path of molecular vectors of all training set')
+    parser.add_argument('frag_vec_model_fp', help='file path of trained fragment2vector model')
+    parser.add_argument('input_fp', help='file path of cid2frag_id_sentence')
+    parser.add_argument('--clustering_model_fp', help='file path of trained clustering model')
+    parser.add_argument('--training_mol_vec_fp', default='', help='file path of molecular vectors of all training set, '
+                                                                  'or a small part of training set where wants to find '
+                                                                  'nearest neighbors.')
     parser.add_argument('--pure_kmeans_class_fp', default='', help='file path of pure kmeans class')
     parser.add_argument('--result_dir', help='result directory')
     parser.add_argument('--topn', default=10, help='find top N of nearest neighbors')
@@ -138,7 +140,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
     input_fp = args.input_fp
     frag_vec_model_fp = args.frag_vec_model_fp
-    kmeans_model_fp = args.kmeans_model_fp
+
 
     result_dir = args.result_dir
     result_fp_mol_vec = os.path.join(result_dir, 'step3_mol_vec.csv')
@@ -148,7 +150,8 @@ if __name__ == '__main__':
     need_predict_class = args.predict_class
     log_fp = args.log_fn
     frag_raw_info = pd.read_csv(input_fp, index_col=0, sep='\t', header=None)
-    frag_raw_info = frag_raw_info.loc[:, [3]].copy()
+    # print(frag_raw_info.head())
+    frag_raw_info = frag_raw_info.loc[:, [1]].copy()
     # print(frag_raw_info.head())
 
     # find molecular vectors
@@ -159,7 +162,7 @@ if __name__ == '__main__':
     cid2mol_vec = {}
     frag_vec_model = load_mol_frag_model(frag_vec_model_fp)
     for i in frag_raw_info.index:
-        _frag = str(frag_raw_info.loc[i, 3])
+        _frag = str(frag_raw_info.loc[i, 1])
         mol_vec = get_mol_vec(frag_vec_model, _frag)
         cid2mol_vec[i] = mol_vec
     mol_vec_df = pd.DataFrame.from_dict(data=cid2mol_vec, orient='index')
@@ -190,13 +193,14 @@ if __name__ == '__main__':
         print('>>>  Predicting class of each molecule ...')
         print()
         # print('>>>')
+        clustering_model_fp = args.clustering_model_fp
         pure_kmeans_class_fp = args.pure_kmeans_class_fp
         if not pure_kmeans_class_fp:
             print('need to add the file path of "pure_kmeans_class.csv" by parameter --pure_kmeans_class_fp')
             raise FileNotFoundError
         pure_kmeans_class = pd.read_csv(pure_kmeans_class_fp, index_col=0)
         pure_kemans_class2super_class = pure_kmeans_class.to_dict()['pure_superclass']
-        kmeans_model = load_kmeans_model(kmeans_model_fp)
+        kmeans_model = load_kmeans_model(clustering_model_fp)
         predicted_class = predict_class(kmeans_model=kmeans_model, mol_vec_df=mol_vec_df,
                                         pure_kmeans_class=pure_kemans_class2super_class)
         predicted_class.to_csv(os.path.join(result_dir, 'step3_predicted_class.csv'))

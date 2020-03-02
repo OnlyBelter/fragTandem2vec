@@ -158,24 +158,25 @@ if __name__ == "__main__":
             mol_blocks = {}  # id2smiles
             id2mol_inx = {}
             cid, smiles = line.strip().split('\t')
-            only_main_ele = if_only_main_element(smiles)
-            if only_main_ele:
-                try:
-                    mol = MolTree(smiles, common_atom_split_ring=3)
-                    for i in mol.nodes:
-                        if i not in mol_blocks:
-                            mol_blocks[i.nid] = ''
-                            id2mol_inx[i.nid] = []
-                        mol_blocks[i.nid] = i.smiles
-                        id2mol_inx[i.nid] = i.clique
-                    for node in mol.nodes:
-                        if node not in node2neighbors:
-                            node2neighbors[node.nid] = []
-                        node2neighbors[node.nid] += [i.nid for i in node.neighbors]
-                    with open(result_file, 'a') as result_f:
-                        result_f.write('\t'.join([json.dumps(i) for i in [cid, smiles, mol_blocks,
-                                                                          node2neighbors, id2mol_inx]]) + '\n')
-                except Exception as e:
-                    with open(log_file, 'a') as log_f:
-                        log_f.write('mol_tree error, cid: {}'.format(cid) + '\n')
-            counter += 1
+            if cid.lower() != 'cid':
+                only_main_ele = if_only_main_element(smiles)
+                if only_main_ele:
+                    try:
+                        mol = MolTree(smiles, common_atom_split_ring=3)
+                        for i in mol.nodes:
+                            if i not in mol_blocks:
+                                mol_blocks[i.nid] = ''
+                                id2mol_inx[i.nid] = []
+                            mol_blocks[i.nid] = i.smiles
+                            id2mol_inx[i.nid] = i.clique
+                        for node in mol.nodes:
+                            if node not in node2neighbors:
+                                node2neighbors[node.nid] = []
+                            node2neighbors[node.nid] += [i.nid for i in node.neighbors]
+                        with open(result_file, 'a') as result_f:
+                            result_f.write('\t'.join([json.dumps(i) for i in [cid, smiles, mol_blocks,
+                                                                              node2neighbors, id2mol_inx]]) + '\n')
+                    except Exception as e:
+                        with open(log_file, 'a') as log_f:
+                            log_f.write('mol_tree error, cid: {}'.format(cid) + '\n')
+                counter += 1

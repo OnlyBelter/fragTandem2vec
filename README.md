@@ -50,9 +50,9 @@ b. count fragment
 
 c. replace fragment SMILES by fragment id
 ```shell script
-python refragment.py ./demo_data/step1_result.txt ./demo_data/step2_result.txt --log_fn ./demo_data/step2_log.log
+python refragment.py ./demo_data/step1_result.txt ./demo_data/ --log_fn ./demo_data/step2_log.log
 # plot molecular structure, molecular tree and molecular with index of the first 10 lines under test model
-python refragment.py ./demo_data/step1_result.txt ./demo_data/step2_result.txt --log_fn ./demo_data/step2_log.log --test
+python refragment.py ./demo_data/step1_result.txt ./demo_data/ --log_fn ./demo_data/step2_log.log --test
 ```
 #### output
 - step2_cid2frag_id_sentence.csv: cid and fragment id sentence
@@ -93,14 +93,14 @@ python clustering.py './demo_data' './demo_data' --include_small_dataset_dir './
 
 and save in directory: molFrag2vec/big-data/...
 
-```
+```shell script
 # only get molecular vectors
-python class_prediction.py ./big-data/s2_trained_model_molFrag2vec3.bin ./big-data/s2_trained_model_kmeans_model.pkl ./demo_data/step2_result.txt --result_dir ./demo_data --log_fn ./demo_data/step3_log.log
+big-data/trained_model/molFrag2vec/trained_model_molFrag2vec.bin dataset/examples_in_paper/step2_cid2frag_id_sentence.csv --result_dir dataset/examples_in_paper/ --log_fn dataset/examples_in_paper/class_prediction_log.log
 
 # calculate nearest neighbors
 # need mol2vec.csv file, add by --training_mol_vec_fp parameter
-python class_prediction.py ./big-data/s2_trained_model_molFrag2vec3.bin ./big-data/s2_trained_model_kmeans_model.pkl ./demo_data/step2_result.txt --result_dir ./demo_data --log_fn ./demo_data/step3_log.log --training_mol_vec_fp ./big-data/mol2vec.csv --find_nearest_neighbors
+python class_prediction.py big-data/trained_model/molFrag2vec/trained_model_molFrag2vec.bin dataset/examples_in_paper/step2_cid2frag_id_sentence.csv --result_dir dataset/examples_in_paper/ --log_fn dataset/examples_in_paper/class_prediction_log.log --training_mol_vec_fp dataset/molFrag2vec_related/mol2vec_model_molFrag2vec_new.csv --find_nearest_neighbors
 
 # predict class
-python class_prediction.py ./big-data/s2_trained_model_molFrag2vec3.bin ./big-data/s2_trained_model_kmeans_model.pkl ./demo_data/step2_result.txt --result_dir ./demo_data --log_fn ./demo_data/step3_log.log --pure_kmeans_class_fp ./big-data/pure_kmeans_class.csv --predict_class
+# python class_prediction.py ./big-data/s2_trained_model_molFrag2vec3.bin ./demo_data/step2_result.txt --clustering_model_fp ./big-data/s2_trained_model_kmeans_model.pkl --result_dir ./demo_data --log_fn ./demo_data/step3_log.log --pure_kmeans_class_fp ./big-data/pure_kmeans_class.csv --predict_class
 ```

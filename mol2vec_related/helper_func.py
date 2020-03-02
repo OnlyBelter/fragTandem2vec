@@ -13,7 +13,7 @@ from mol2vec.features import generate_corpus, train_word2vec_model, mol2alt_sent
 
 def get_cid2smiles(cid2smiles, cid_list, result_file):
     """
-    get cid2smiles in training set
+    get cid2smiles.txt in training set
     :param cid2smiles: file path, cid, smiles
     :param cid_list： file path of cid list in train_set
     :param result_file: file path of result
@@ -33,7 +33,7 @@ def get_cid2smiles(cid2smiles, cid_list, result_file):
                 with open(result_file, 'a') as r_handle:
                     r_handle.write(cid + '\t' + cid2smiles_dict[cid] + '\n')
             else:
-                print('>>> this compound {} does not exist in our cid2smiles list...'.format(cid))
+                print('>>> this compound {} does not exist in our cid2smiles.txt list...'.format(cid))
 
 
 def generate_corpus_from_smiles(in_file, out_file, r, sentence_type='alt', n_jobs=1):
@@ -210,14 +210,14 @@ def load_trained_model(model_fp):
 
 
 if __name__ == '__main__':
-    # cid2smiles = '../big-data/all_cid2smiles/all_data_set_CID2Canonical_SMILES.txt'
+    # cid2smiles.txt = '../big-data/all_cid2smiles/all_data_set_CID2Canonical_SMILES.txt'
     # cid_list = '../big-data/all_cid2smiles/step5_x_training_set.csv'
     reuslt_file_path1 = '../big-data/cid2fragment/mol2vec/cid2smiles_training_set.txt'
     reuslt_file_path2 = '../big-data/cid2fragment/mol2vec/cid2smiles_training_set_coupus.tmp'
     reuslt_file_path3 = '../big-data/cid2fragment/mol2vec/cid2smiles_training_set_coupus.txt'
     cid2smiles_test = '../big-data/cid2smiles_test.txt'
     reuslt_file_path4 = '../big-data/vectors/mol2vec_model_mol2vec.csv'
-    # get_cid2smiles(cid2smiles, cid_list, result_file=reuslt_file_path1)
+    # get_cid2smiles(cid2smiles.txt, cid_list, result_file=reuslt_file_path1)
 
     # step1 generate corpus (sentence)
     generate_corpus_from_smiles(in_file=reuslt_file_path1, out_file=reuslt_file_path2, r=1, n_jobs=4)
