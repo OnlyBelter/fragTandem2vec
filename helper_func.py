@@ -168,33 +168,50 @@ def get_frag_attr(frag_smiles):
                 'aromatic_ring': aromatic, 'ring_num': 0, 'n_atom': 0}
 
 
-def get_mol_vec(frag2vec, data_set, result_path):
+def get_mol_vec(frag2vec_fp, data_set_fp, result_path, data_set_format='csv'):
     """
     sum all fragment vector to get molecule vector
-    :param frag2vec:
-    :param data_set: step5_x_training_set.csv
+    :param frag2vec_fp: file path of fragment to vector (separated by ",")
+    :param data_set_fp: file path of step5_x_training_set.csv or "big-data/all_cid2smiles/x_training_set_cid2_sentence_new.csv"
+    :param data_set_format: csv/ txt
     :return:
     """
-    frag2vec_df = pd.read_csv(frag2vec, index_col=0)
+    frag2vec_df = pd.read_csv(frag2vec_fp, index_col=0)
     cid2vec = {}
     counter = 0
-    with open(data_set, 'r') as handle:
-        train_set_reader = csv.reader(handle, delimiter=',')
-        for row in train_set_reader:
-            if row[-1] != '0':
-                cid, mol_path, mol_inx, frag_smiles = row
-                frags = frag_smiles.split(' ')
+    with open(data_set_fp, 'r') as handle:
+        if data_set_format == 'csv':
+            train_set_reader = csv.reader(handle, delimiter=',')
+            for row in train_set_reader:
+                if row[-1] != '0':
+                    cid, mol_path, mol_inx, frag_smiles = row
+                    frags = frag_smiles.split(' ')
+                    try:
+                        cid2vec[cid] = frag2vec_df.loc[frags, :].sum().values
+                    except KeyError:
+                        print('fragments {} are not in lib'.format(frag_smiles))
+                    if len(cid2vec) == 500000:
+                        pid2vec_df = pd.DataFrame.from_dict(cid2vec, orient='index')
+                        pid2vec_df.to_csv(result_path, mode='a', header=False, float_format='%.3f')
+                        cid2vec = {}
+                if counter % 10000 == 0:
+                    print('>>> Processing line {}...'.format(counter))
+                counter += 1
+        else:
+            for row in handle:
+                cid, frag_id = row.strip().split('\t')
+                frags = frag_id.split(',')
                 try:
                     cid2vec[cid] = frag2vec_df.loc[frags, :].sum().values
                 except KeyError:
-                    print('fragments {} are not in lib'.format(frag_smiles))
+                    print('some fragments in {} are not in lib'.format(row))
                 if len(cid2vec) == 500000:
                     pid2vec_df = pd.DataFrame.from_dict(cid2vec, orient='index')
                     pid2vec_df.to_csv(result_path, mode='a', header=False, float_format='%.3f')
                     cid2vec = {}
-            if counter % 10000 == 0:
-                print('>>> Processing line {}...'.format(counter))
-            counter += 1
+                if counter % 10000 == 0:
+                    print('>>> Processing line {}...'.format(counter))
+                counter += 1
     # the last part
     pid2vec_df = pd.DataFrame.from_dict(cid2vec, orient='index')
     pid2vec_df.to_csv(result_path, mode='a', header=False, float_format='%.3f')

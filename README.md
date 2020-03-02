@@ -41,6 +41,8 @@ $ rm -rf fastText
   Then we can get the fragments of each molecule and the relation between each two fragments.
 ```shell script
 python mol_tree.py demo_data/demo_dataset.txt demo_data/step1_result.txt --log_fn demo_data/step1_log.log
+# or calculate molecular tree of examples in paper
+python mol_tree.py dataset/examples_in_paper/cid2smiles.txt dataset/examples_in_paper/step1_result.txt --log_fn dataset/examples_in_paper/step1_log.log
 ```
 
 ### 2.2 refragment
@@ -95,11 +97,11 @@ and save in directory: molFrag2vec/big-data/...
 
 ```shell script
 # only get molecular vectors
-big-data/trained_model/molFrag2vec/trained_model_molFrag2vec.bin dataset/examples_in_paper/step2_cid2frag_id_sentence.csv --result_dir dataset/examples_in_paper/ --log_fn dataset/examples_in_paper/class_prediction_log.log
+python class_prediction.py big-data/all_cid2smiles/x_training_set_cid2_sentence_new.csv big-data/frag2vec_model_molFrag2vec_new.csv --result_dir big-data/all_cid2smiles/ --log_fn big-data/all_cid2smiles/class_prediction_log.log
 
 # calculate nearest neighbors
 # need mol2vec.csv file, add by --training_mol_vec_fp parameter
-python class_prediction.py big-data/trained_model/molFrag2vec/trained_model_molFrag2vec.bin dataset/examples_in_paper/step2_cid2frag_id_sentence.csv --result_dir dataset/examples_in_paper/ --log_fn dataset/examples_in_paper/class_prediction_log.log --training_mol_vec_fp dataset/molFrag2vec_related/mol2vec_model_molFrag2vec_new.csv --find_nearest_neighbors
+python class_prediction.py dataset/examples_in_paper/step2_cid2frag_id_sentence.csv big-data/frag2vec_model_molFrag2vec_new.csv --result_dir dataset/examples_in_paper/ --training_mol_vec_fp big-data/all_cid2smiles/mol_vec_all_training_set_model_molFrag2vec.csv --log_fn dataset/examples_in_paper/class_prediction.log --find_nearest_neighbors
 
 # predict class
 # python class_prediction.py ./big-data/s2_trained_model_molFrag2vec3.bin ./demo_data/step2_result.txt --clustering_model_fp ./big-data/s2_trained_model_kmeans_model.pkl --result_dir ./demo_data --log_fn ./demo_data/step3_log.log --pure_kmeans_class_fp ./big-data/pure_kmeans_class.csv --predict_class

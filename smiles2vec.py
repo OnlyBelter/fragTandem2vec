@@ -69,26 +69,26 @@ if __name__=='__main__':
     result_fp2 = os.path.join(result_dir, 'step4_selected_cid2fragment_down_sampled_model_molFrag2vec.csv')
     selected_cid_fp = os.path.join(include_small_dataset_dir, 'down_sampled_cid2class_unique.csv')
 
-    # get fragments of selected molecule in mol2vec
-    print(os.path.abspath(os.getcwd()))
-    print(os.path.exists(selected_cid_fp))
-    all_train_cid_fp = os.path.join(download_big_data_dir, 'cid2fragment', 'mol2vec', 'cid2smiles_training_set.txt')
-    all_fragment_fp = os.path.join(download_big_data_dir, 'cid2fragment', 'mol2vec', 'cid2smiles_training_set_coupus.txt')
-    get_fragment_by_cid(selected_cid_fp=selected_cid_fp, all_train_cid_fp=all_train_cid_fp,
-                        fragment_fp=all_fragment_fp, result_fp=result_fp)
-
-    # get fragments of selected in molFrag2vec
-    # selected_cid_fp = './big-data/cid2class_classyfire/down_sampled_cid2class_unique.csv'
-    all_train_cid_fp2 = os.path.join(download_big_data_dir, 'cid2fragment', 'molFrag2vec', 'x_training_set_cid2_sentence_new.csv')
-    all_fragment_fp2 = os.path.join(download_big_data_dir, 'cid2fragment', 'molFrag2vec', 'x_training_set_sentence_new.csv')
-    get_fragment_by_cid(selected_cid_fp=selected_cid_fp, all_train_cid_fp=all_train_cid_fp2,
-                        fragment_fp=all_fragment_fp2, result_fp=result_fp2)
+    # # get fragments of selected molecule in mol2vec
+    # print(os.path.abspath(os.getcwd()))
+    # print(os.path.exists(selected_cid_fp))
+    # all_train_cid_fp = os.path.join(download_big_data_dir, 'cid2fragment', 'mol2vec', 'cid2smiles_training_set.txt')
+    # all_fragment_fp = os.path.join(download_big_data_dir, 'cid2fragment', 'mol2vec', 'cid2smiles_training_set_coupus.txt')
+    # get_fragment_by_cid(selected_cid_fp=selected_cid_fp, all_train_cid_fp=all_train_cid_fp,
+    #                     fragment_fp=all_fragment_fp, result_fp=result_fp)
+    #
+    # # get fragments of selected in molFrag2vec
+    # # selected_cid_fp = './big-data/cid2class_classyfire/down_sampled_cid2class_unique.csv'
+    # all_train_cid_fp2 = os.path.join(download_big_data_dir, 'cid2fragment', 'molFrag2vec', 'x_training_set_cid2_sentence_new.csv')
+    # all_fragment_fp2 = os.path.join(download_big_data_dir, 'cid2fragment', 'molFrag2vec', 'x_training_set_sentence_new.csv')
+    # get_fragment_by_cid(selected_cid_fp=selected_cid_fp, all_train_cid_fp=all_train_cid_fp2,
+    #                     fragment_fp=all_fragment_fp2, result_fp=result_fp2)
 
     # get vector of each molecule by molFrag2vec model
-    frag2vec_file = os.path.join(include_small_dataset_dir, 'molFrag2vec_related', 'frag2vec_model_molFrag2vec_new.csv')
-    training_set_file = result_fp2
-    result_file = os.path.join(result_dir, 'step4_selected_mol2vec_model_molFrag2vec.csv')
-    get_mol_vec(frag2vec=frag2vec_file, data_set=training_set_file, result_path=result_file)
+    # frag2vec_file = os.path.join(include_small_dataset_dir, 'molFrag2vec_related', 'frag2vec_model_molFrag2vec_new.csv')
+    # training_set_file = result_fp2
+    # result_file = os.path.join(result_dir, 'step4_selected_mol2vec_model_molFrag2vec.csv')
+    # get_mol_vec(frag2vec_fp=frag2vec_file, data_set_fp=training_set_file, result_path=result_file)
 
     # get vector of each molecule by mol2vec model
     mol_info = pd.read_csv(os.path.join(include_small_dataset_dir, 'mol2vec_related',
