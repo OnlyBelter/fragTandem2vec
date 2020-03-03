@@ -51,6 +51,6 @@ if __name__ == '__main__':
     result_fn = args.result_fn
     train_model(input_file, result_fn)
     result_dir = os.path.dirname(result_fn)
-    frag2vec_fp = os.path.join(result_dir, 'step3_frag2vec_model_molFrag2vec.csv')
+    frag2vec_fp = os.path.join(result_dir, 'step3_frag2vec_model_fragTandem2vec.csv')
     # mol2vec_fp = os.path.join(result_dir, 'selected_mol2vec.csv')
     get_frag_vector(result_fn, frag_id2vec_fp=frag2vec_fp)

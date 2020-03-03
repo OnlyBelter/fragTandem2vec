@@ -66,7 +66,7 @@ if __name__=='__main__':
     download_big_data_dir = './big-data'
     include_small_dataset_dir = './dataset'
     result_fp = os.path.join(result_dir, 'step4_selected_cid2fragment_down_sampled_model_mol2vec.csv')
-    result_fp2 = os.path.join(result_dir, 'step4_selected_cid2fragment_down_sampled_model_molFrag2vec.csv')
+    result_fp2 = os.path.join(result_dir, 'step4_selected_cid2fragment_down_sampled_model_fragTandem2vec.csv')
     selected_cid_fp = os.path.join(include_small_dataset_dir, 'down_sampled_cid2class_unique.csv')
 
     # # get fragments of selected molecule in mol2vec
@@ -85,9 +85,9 @@ if __name__=='__main__':
     #                     fragment_fp=all_fragment_fp2, result_fp=result_fp2)
 
     # get vector of each molecule by molFrag2vec model
-    # frag2vec_file = os.path.join(include_small_dataset_dir, 'molFrag2vec_related', 'frag2vec_model_molFrag2vec_new.csv')
+    # frag2vec_file = os.path.join(include_small_dataset_dir, 'fragTandem2vec_related', 'frag2vec_model_fragTandem2vec_new.csv')
     # training_set_file = result_fp2
-    # result_file = os.path.join(result_dir, 'step4_selected_mol2vec_model_molFrag2vec.csv')
+    # result_file = os.path.join(result_dir, 'step4_selected_mol2vec_model_fragTandem2vec.csv')
     # get_mol_vec(frag2vec_fp=frag2vec_file, data_set_fp=training_set_file, result_path=result_file)
 
     # get vector of each molecule by mol2vec model

@@ -97,11 +97,11 @@ and save in directory: molFrag2vec/big-data/...
 
 ```shell script
 # only get molecular vectors
-python class_prediction.py big-data/all_cid2smiles/x_training_set_cid2_sentence_new.csv big-data/frag2vec_model_molFrag2vec_new.csv --result_dir big-data/all_cid2smiles/ --log_fn big-data/all_cid2smiles/class_prediction_log.log
+python class_prediction.py big-data/all_cid2smiles/x_training_set_cid2_sentence_new.csv big-data/frag2vec_model_fragTandem2vec_new.csv --result_dir big-data/all_cid2smiles/ --log_fn big-data/all_cid2smiles/class_prediction_log.log
 
 # calculate nearest neighbors
 # need mol2vec.csv file, add by --training_mol_vec_fp parameter
-python class_prediction.py dataset/examples_in_paper/step2_cid2frag_id_sentence.csv big-data/frag2vec_model_molFrag2vec_new.csv --result_dir dataset/examples_in_paper/ --training_mol_vec_fp big-data/all_cid2smiles/mol_vec_all_training_set_model_molFrag2vec.csv --log_fn dataset/examples_in_paper/class_prediction.log --find_nearest_neighbors
+python class_prediction.py dataset/examples_in_paper/step2_cid2frag_id_sentence.csv big-data/frag2vec_model_fragTandem2vec_new.csv --result_dir dataset/examples_in_paper/ --training_mol_vec_fp big-data/all_cid2smiles/mol_vec_all_training_set_model_molFrag2vec.csv --log_fn dataset/examples_in_paper/class_prediction.log --find_nearest_neighbors
 
 # predict class
 # python class_prediction.py ./big-data/s2_trained_model_molFrag2vec3.bin ./demo_data/step2_result.txt --clustering_model_fp ./big-data/s2_trained_model_kmeans_model.pkl --result_dir ./demo_data --log_fn ./demo_data/step3_log.log --pure_kmeans_class_fp ./big-data/pure_kmeans_class.csv --predict_class
