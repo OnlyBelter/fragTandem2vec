@@ -106,3 +106,9 @@ python class_prediction.py dataset/examples_in_paper/step2_cid2frag_id_sentence.
 # predict class
 # python class_prediction.py ./big-data/s2_trained_model_molFrag2vec3.bin ./demo_data/step2_result.txt --clustering_model_fp ./big-data/s2_trained_model_kmeans_model.pkl --result_dir ./demo_data --log_fn ./demo_data/step3_log.log --pure_kmeans_class_fp ./big-data/pure_kmeans_class.csv --predict_class
 ```
+
+### 附件
+附件1：所有碎片以及出现的次数，dataset/fragTandem2vec_related/frag2num_training_set_model_fragTandem2vec.csv
+附件2：训练好的碎片向量模型
+- Mol2vec model: dataset/mol2vec_related/mol2vec_model.pkl
+- fragTandem2vec model: 
