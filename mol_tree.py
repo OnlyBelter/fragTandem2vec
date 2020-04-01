@@ -8,7 +8,7 @@ from __future__ import print_function
 import rdkit
 import rdkit.Chem as Chem
 from chemutils import get_clique_mol, tree_decomp, get_mol, get_smiles, set_atommap, enum_assemble
-from pub_func import if_only_main_element
+from pub_func import if_only_main_element, write_list_by_json
 import json
 import argparse
 
@@ -157,7 +157,16 @@ if __name__ == "__main__":
             node2neighbors = {}
             mol_blocks = {}  # id2smiles
             id2mol_inx = {}
-            cid, smiles = line.strip().split('\t')
+            _line = line.strip().split('\t')
+            # print(_line)
+            if len(_line) == 2:
+                cid, smiles = _line
+            elif len(_line) == 1:
+                cid = 'id' + str(counter)
+                smiles = _line[0]
+            else:
+                raise Exception('Each line should separate by tab and 1 or 2 columns')
+            # cid, smiles = line.strip().split('\t')
             if cid.lower() != 'cid':
                 only_main_ele = if_only_main_element(smiles)
                 if only_main_ele:
@@ -174,9 +183,12 @@ if __name__ == "__main__":
                                 node2neighbors[node.nid] = []
                             node2neighbors[node.nid] += [i.nid for i in node.neighbors]
                         with open(result_file, 'a') as result_f:
-                            result_f.write('\t'.join([json.dumps(i) for i in [cid, smiles, mol_blocks,
-                                                                              node2neighbors, id2mol_inx]]) + '\n')
+                            write_str = write_list_by_json([cid, smiles, mol_blocks, node2neighbors, id2mol_inx])
+                            result_f.write(write_str)
                     except Exception as e:
                         with open(log_file, 'a') as log_f:
                             log_f.write('mol_tree error, cid: {}'.format(cid) + '\n')
+                else:
+                    with open(log_file, 'a') as log_f:
+                        log_f.write('This molecule contains rare elements: {}, {}'.format(cid, smiles) + '\n')
                 counter += 1

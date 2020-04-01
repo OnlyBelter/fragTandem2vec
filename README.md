@@ -22,6 +22,13 @@ conda activate molFrag2vec
 # install rdkit and mol2vec
 conda install -c rdkit rdkit==2019.03.3.0
 pip install git+https://github.com/samoturk/mol2vec
+
+# install HDBSCAN and mordred
+conda install -c conda-forge hdbscan
+pip install git+https://github.com/mordred-descriptor/mordred
+
+# install tensorflow
+pip install tensorflow==2.1.0
 ```
 
 ### 1.4 building fastText for Python
@@ -29,7 +36,7 @@ pip install git+https://github.com/samoturk/mol2vec
 ```shell script
 $ git clone https://github.com/facebookresearch/fastText.git
 $ cd fastText
-$ git checkout tags/v0.9.1
+#$ git checkout tags/v0.9.1
 $ pip install .
 $ cd ..
 $ rm -rf fastText
