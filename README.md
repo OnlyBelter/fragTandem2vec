@@ -47,9 +47,9 @@ $ rm -rf fastText
 - The first step: generate molecular tree based on https://github.com/wengong-jin/icml18-jtnn.
   Then we can get the fragments of each molecule and the relation between each two fragments.
 ```shell script
-python mol_tree.py demo_data/demo_dataset.txt demo_data/step1_result.txt --log_fn demo_data/step1_log.log
+python step1_mol_tree.py demo_data/demo_dataset.txt demo_data/step1_result.txt --log_fn demo_data/step1_log.log
 # or calculate molecular tree of examples in paper
-python mol_tree.py dataset/examples_in_paper/cid2smiles.txt dataset/examples_in_paper/step1_result.txt --log_fn dataset/examples_in_paper/step1_log.log
+python step1_mol_tree.py dataset/examples_in_paper/cid2smiles.txt dataset/examples_in_paper/step1_result.txt --log_fn dataset/examples_in_paper/step1_log.log
 ```
 
 ### 2.2 refragment
@@ -57,11 +57,11 @@ a. generate fragment sentence
 
 b. count fragment
 
-c. replace fragment SMILES by fragment id
+c. replace fragment SMILES by fragment id (optional)
 ```shell script
-python refragment.py ./demo_data/step1_result.txt ./demo_data/ --log_fn ./demo_data/step2_log.log
+python step2_refragment.py ./demo_data/step1_result.txt ./demo_data/ --log_fn ./demo_data/step2_log.log
 # plot molecular structure, molecular tree and molecular with index of the first 10 lines under test model
-python refragment.py ./demo_data/step1_result.txt ./demo_data/ --log_fn ./demo_data/step2_log.log --test
+python step2_refragment.py ./demo_data/step1_result.txt ./demo_data/ --log_fn ./demo_data/step2_log.log --test
 ```
 #### output
 - step2_cid2frag_id_sentence.csv: cid and fragment id sentence
@@ -72,7 +72,7 @@ python refragment.py ./demo_data/step1_result.txt ./demo_data/ --log_fn ./demo_d
 ### 2.3 training model
 Training molFrag2vec model by FastText, and get the vectors of all fragments.
 ```shell script
-python training_model.py ./demo_data/step2_frag_id_sentence.csv ./demo_data/step3_molFrag2vec_demo.bin
+python training_frag_vec_model.py ./demo_data/step2_frag_id_sentence.csv ./demo_data/step3_molFrag2vec_demo.bin
 ```
 #### output
 - step3_frag2vec_model_molFrag2vec.csv: fragment vectors
