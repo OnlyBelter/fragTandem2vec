@@ -6,6 +6,7 @@ def sampling_from_train_set(n_sample):
     total_n = 10530369
     return np.random.choice(range(total_n), n_sample, replace=False)
 
+
 def get_selected_mol(cid2smiles_path, sentences_path, sampled_id, cid_result_path, sentence_result_path):
     """
 
@@ -32,6 +33,7 @@ def get_selected_mol(cid2smiles_path, sentences_path, sampled_id, cid_result_pat
                 with open(sentence_result_path, 'a') as f_handle2:
                     f_handle2.write('\t'.join([str(counter2), each_line]) + '\n')
             counter2 += 1
+
 
 if __name__ == '__main__':
     sampled_id = sampling_from_train_set(100000)

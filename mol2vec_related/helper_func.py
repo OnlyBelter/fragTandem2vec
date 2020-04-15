@@ -1,6 +1,7 @@
 """
 helper function for mol2vec_related
 """
+import os
 from tqdm import tqdm
 import pandas as pd
 from rdkit import Chem
@@ -40,7 +41,7 @@ def generate_corpus_from_smiles(in_file, out_file, r, sentence_type='alt', n_job
     """
     modified from generate_corpus
     https://mol2vec.readthedocs.io/en/latest/#mol2vec.features.generate_corpus
-    :param in_file:
+    :param in_file: cid, smiles
     :param out_file:
     :param r: int, Radius of morgan fingerprint
     :param sentence_type:
@@ -50,8 +51,12 @@ def generate_corpus_from_smiles(in_file, out_file, r, sentence_type='alt', n_job
     all_smiles = []
     with open(in_file, 'r') as f_handle:
         for each_line in f_handle:
-            cid, smiles = each_line.strip().split('\t')
-            all_smiles.append(smiles)
+            if ',' in each_line:
+                cid, smiles = each_line.strip().split(',')
+            else:
+                cid, smiles = each_line.strip().split('\t')
+            if smiles != 'smiles':
+                all_smiles.append(smiles)
 
     if sentence_type == 'alt':  # This can run parallelized
         result = Parallel(n_jobs=n_jobs, verbose=1)(delayed(_parallel_job)(smiles, r) for smiles in all_smiles)
@@ -212,19 +217,43 @@ def load_trained_model(model_fp):
 if __name__ == '__main__':
     # cid2smiles.txt = '../big-data/all_cid2smiles/all_data_set_CID2Canonical_SMILES.txt'
     # cid_list = '../big-data/all_cid2smiles/step5_x_training_set.csv'
-    reuslt_file_path1 = '../big-data/cid2fragment/mol2vec/cid2smiles_training_set.txt'
-    reuslt_file_path2 = '../big-data/cid2fragment/mol2vec/cid2smiles_training_set_coupus.tmp'
-    reuslt_file_path3 = '../big-data/cid2fragment/mol2vec/cid2smiles_training_set_coupus.txt'
-    cid2smiles_test = '../big-data/cid2smiles_test.txt'
-    reuslt_file_path4 = '../big-data/vectors/mol2vec_model_mol2vec.csv'
+    root_dir = '../big-data/moses_dataset/model_mol2vec/'
+    result_file_path1 = os.path.join('../big-data/moses_dataset/nn/parallel/cid2smiles_all_in_train_test.csv')
+    result_file_path2 = os.path.join(root_dir, 'cid2smiles_training_set_coupus.tmp')
+    result_file_path3 = os.path.join(root_dir, 'cid2smiles_training_set_coupus.txt')
+    mol2vec_fp = os.path.join(root_dir, 'model_mol2vec_mol2vec.csv')
+    model_fp = os.path.join(root_dir, 'mol2vec_model.pkl')
+    # cid2smiles_test = '../big-data/cid2smiles_test.txt'
+    # result_file_path4 = '../big-data/vectors/mol2vec_model_mol2vec.csv'
     # get_cid2smiles(cid2smiles.txt, cid_list, result_file=reuslt_file_path1)
 
     # step1 generate corpus (sentence)
-    generate_corpus_from_smiles(in_file=reuslt_file_path1, out_file=reuslt_file_path2, r=1, n_jobs=4)
+    generate_corpus_from_smiles(in_file=result_file_path1, out_file=result_file_path2, r=1, n_jobs=4)
 
     # step2 Handling of uncommon "words"
-    insert_unk(corpus=reuslt_file_path2, out_corpus=reuslt_file_path3)
+    insert_unk(corpus=result_file_path2, out_corpus=result_file_path3)
 
     # step3 train molecule vector
-    train_word2vec_model(infile_name=reuslt_file_path3, outfile_name='../big-data/mol2vec_model.pkl',
-                         vector_size=150, window=10, min_count=3, n_jobs=4, method='cbow')
+    train_word2vec_model(infile_name=result_file_path3, outfile_name=model_fp,
+                         vector_size=100, window=10, min_count=3, n_jobs=4, method='cbow')
+
+    # get vector of each molecule by mol2vec model
+    # mol with fragment id sentence
+    mol_info = pd.read_csv(result_file_path3, header=None)
+
+    # model_fp = os.path.join(include_small_dataset_dir, 'mol2vec_related', 'mol2vec_model.pkl')
+    model = load_trained_model(model_fp)
+    # print(mol_info.loc[4568802, '0'])
+    mol_info['sentence'] = mol_info.apply(lambda x: MolSentence([str(i) for i in x[0].split(' ')]), axis=1)
+    # print(mol_info)
+    mol_info['mol2vec_related'] = [DfVec(x) for x in sentences2vec(mol_info['sentence'], model)]
+    cid2vec = {}
+    cid2smiles = pd.read_csv(result_file_path1)
+    inx2cid = cid2smiles['0'].to_dict()
+    for inx in mol_info.index.to_list():
+        cid = inx2cid[inx]
+        cid2vec[cid] = list(mol_info.loc[inx, 'mol2vec_related'].vec)
+    cid2vec_df = pd.DataFrame.from_dict(cid2vec, orient='index')
+    print(cid2vec_df.shape)
+    # result_file2 = os.path.join(result_dir, 'step4_selected_mol2vec_model_mol2vec.csv')
+    cid2vec_df.to_csv(mol2vec_fp, header=False, float_format='%.3f')

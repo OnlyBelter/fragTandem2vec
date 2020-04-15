@@ -181,12 +181,16 @@ def get_frag_attr(frag_smiles):
                 'aromatic_ring': aromatic, 'ring_num': 0, 'n_atom': 0}
 
 
-def get_mol_vec(frag2vec_fp, data_set_fp, result_path, data_set_format='csv'):
+def get_mol_vec(frag2vec_fp, data_set_fp, result_path,
+                log_fp, data_set_format='csv', sub_cid_list=None):
     """
     sum all fragment vector to get molecule vector
     :param frag2vec_fp: file path of fragment to vector (separated by ",")
-    :param data_set_fp: file path of step5_x_training_set.csv or "big-data/all_cid2smiles/x_training_set_cid2_sentence_new.csv"
+    :param data_set_fp: file path of step1_result.txt or step2_id2frag_info_refrag.csv
+    :param result_path: the file path of result
+    :param log_fp: the file path of log
     :param data_set_format: csv/ txt
+    :param sub_cid_list: a selected cid list to filter whole data set
     :return:
     """
     frag2vec_df = pd.read_csv(frag2vec_fp, index_col=0)
@@ -194,19 +198,37 @@ def get_mol_vec(frag2vec_fp, data_set_fp, result_path, data_set_format='csv'):
     counter = 0
     with open(data_set_fp, 'r') as handle:
         if data_set_format == 'csv':
-            train_set_reader = csv.reader(handle, delimiter=',')
+            train_set_reader = csv.reader(handle, delimiter='\t')
             for row in train_set_reader:
-                if row[-1] != '0':
-                    cid, mol_path, mol_inx, frag_smiles = row
-                    frags = frag_smiles.split(' ')
-                    try:
-                        cid2vec[cid] = frag2vec_df.loc[frags, :].sum().values
-                    except KeyError:
-                        print('fragments {} are not in lib'.format(frag_smiles))
-                    if len(cid2vec) == 500000:
-                        pid2vec_df = pd.DataFrame.from_dict(cid2vec, orient='index')
-                        pid2vec_df.to_csv(result_path, mode='a', header=False, float_format='%.3f')
-                        cid2vec = {}
+                calc_this_line = True
+                if row[0] != 'cid':
+                    # print(row)
+                    cid, smiles, frag_id2smiles, frag_id2neighbors, frag_id2mol_inx = row
+                    if sub_cid_list and (cid not in sub_cid_list):
+                        calc_this_line = False
+                    if calc_this_line:
+                        frags = list(json.loads(frag_id2smiles).values())
+                        # print(frags)
+                        try:
+                            cid2vec[cid] = frag2vec_df.loc[frags, :].sum().values
+                        except KeyError:
+                            _frags = []
+                            short_frag = []
+                            for frag in frags:
+                                if frag not in frag2vec_df.index:
+                                    print('frag {} is not in frag2vec and removed'.format(frag))
+                                    short_frag.append(frag)
+                                else:
+                                    _frags.append(frag)
+                            cid2vec[cid] = frag2vec_df.loc[_frags, :].sum().values
+                            with open(log_fp, 'a') as f_handle3:
+                                f_handle3.write('Short fragment {} in this molecule:'.format(','.join(short_frag))
+                                                + '\t' + '\t'.join(row) + '\n')
+                            # print('fragments {} are not in lib'.format(frags))
+                        if len(cid2vec) == 100000:
+                            pid2vec_df = pd.DataFrame.from_dict(cid2vec, orient='index')
+                            pid2vec_df.to_csv(result_path, mode='a', header=False, float_format='%.3f')
+                            cid2vec = {}
                 if counter % 10000 == 0:
                     print('>>> Processing line {}...'.format(counter))
                 counter += 1
@@ -295,8 +317,9 @@ def count_fragment_from_step1(step1_result_fp):
     return frag2num_df
 
 
-def replace_smiles_by_frag_id(frag2num_fp, cid2frag_fp, result_fp, result_fp2, replace_by_id=True):
+def get_fragment_sentence(frag2num_fp, cid2frag_fp, result_fp, result_fp2, replace_by_id=True):
     """
+    get fragment sentence
     replace SMILES of fragment by fragment id for saving storage space
     :param frag2num_fp: file path of fragment to number, frag_id,fragment(SMILES),count
     :param cid2frag_fp: file path of cid to sentence (fragments)
@@ -569,7 +592,7 @@ def get_class(frag_info, selected_md=None, min_number=3):
     get unique class depends on different molecular descriptors
     frag_info: a dataframe which contains fragment smiles, selected_md
     selected_md: selected molecular descriptors
-    min_number: the minimal number in each class
+    min_number: the minimal number of fragment in each class
     :return: fragment, class(the product of multiple primer numbers), class_id(0 to n), class_num(count each class)
     """
     if not selected_md:
@@ -585,6 +608,52 @@ def get_class(frag_info, selected_md=None, min_number=3):
     frag_info = frag_info.apply(lambda x: np.multiply(x, unique_code), axis=1)
     frag_info[frag_info == 0] = 1
     frag2class = frag_info.apply(lambda x: mul_list(x), axis=1)
+    frag2class = pd.DataFrame(frag2class, columns=['class'])
+
+    frag_class2num = {}
+    for c in frag2class.index:
+        class_num = frag2class.loc[c, 'class']
+        if class_num not in frag_class2num:
+            frag_class2num[class_num] = 0
+        frag_class2num[class_num] += 1
+    frag_class2num_df = pd.DataFrame.from_dict(frag_class2num, orient='index', columns=['class_num'])
+    frag2class = frag2class.merge(frag_class2num_df, left_on='class', right_index=True)
+    frag2class = frag2class[frag2class['class_num'] >= min_number].copy()
+    print('  >the shape of frag2class after filtered: {}'.format(frag2class.shape))
+
+    unique_class = sorted(frag2class['class'].unique())
+    code2id = {unique_class[i]: i for i in range(len(unique_class))}
+    print(code2id)
+    frag2class['class_id'] = frag2class['class'].apply(lambda x: code2id[x])
+
+    # depth = len(code2id)
+    # y_one_hot = tf.one_hot(frag2class_filtered.class_id.values, depth=depth)
+    # print('  >the shape of one hot y: {}'.format(y_one_hot.shape))
+    return frag2class
+
+
+def get_class_md_combination(frag_info, selected_md=None, min_number=3):
+    """
+    get unique class depends on different molecular descriptors
+    frag_info: a dataframe which contains fragment smiles, selected_md
+    selected_md: selected molecular descriptors
+    min_number: the minimal number of fragment in each class
+    :return: fragment, class(the combination of different MD, such as 10001010),
+             class_id(0 to n), class_num(count each class)
+    """
+    if not selected_md:
+        selected_md = SELECTED_MD
+    # md_num = len(selected_md)
+    # if md_num <= len(PRMIER_NUM):
+    #     unique_code = PRMIER_NUM[:md_num]
+    # else:
+    #     raise Exception('Please give more primer number to PRMIER_NUM...')
+    # frag_info = frag_info.set_index('fragment')
+    frag_info = frag_info.loc[:, selected_md].copy()
+    frag_info[frag_info >= 1] = 1
+    # frag_info = frag_info.apply(lambda x: np.multiply(x, unique_code), axis=1)
+    # frag_info[frag_info == 0] = 1
+    frag2class = frag_info.apply(lambda x: ''.join([str(i) for i in x]), axis=1)
     frag2class = pd.DataFrame(frag2class, columns=['class'])
 
     frag_class2num = {}
