@@ -218,7 +218,7 @@ if __name__ == '__main__':
     # cid2smiles.txt = '../big-data/all_cid2smiles/all_data_set_CID2Canonical_SMILES.txt'
     # cid_list = '../big-data/all_cid2smiles/step5_x_training_set.csv'
     root_dir = '../big-data/moses_dataset/model_mol2vec/'
-    result_file_path1 = os.path.join('../big-data/moses_dataset/nn/cid2smiles_all_in_train_test.csv')
+    result_file_path1 = os.path.join('../big-data/moses_dataset/nn/parallel/cid2smiles_all_in_train_test.csv')
     result_file_path2 = os.path.join(root_dir, 'cid2smiles_training_set_coupus.tmp')
     result_file_path3 = os.path.join(root_dir, 'cid2smiles_training_set_coupus.txt')
     mol2vec_fp = os.path.join(root_dir, 'model_mol2vec_mol2vec.csv')

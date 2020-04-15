@@ -86,11 +86,11 @@ def nn_model_regression(x, y, result_dir):
 
 if __name__ == '__main__':
     model_type = 'regression'  # classification
-    frag2vec_type = 'mol2vec'   # random / parallel_frag2vec / mol2vec (model name)
+    frag2vec_type = 'tandem'   # random / parallel_frag2vec / mol2vec (model name) / tandem_frag2vec
     root_dir = './big-data/moses_dataset/'
-    result_dir = './big-data/moses_dataset/model_mol2vec'
+    result_dir = './big-data/moses_dataset/nn/tandem'
     mol2md_info_file = './big-data/moses_dataset/result/mol2md_downsampled_max_5000.csv'
-    frag2vec_file = os.path.join(root_dir, 'best_model', 'sub_ws_4_minn_1_maxn_2',
+    frag2vec_file = os.path.join(root_dir, 'best_model', 'sub_ws_4_minn_1_maxn_2_parallel',
                                  'frag2vec_ws_4_minn_1_maxn_2.csv')
     mol2vec_fp = None
     ref_training_set_mol2vec_fp = None
@@ -99,6 +99,8 @@ if __name__ == '__main__':
         mol2vec_fp = os.path.join(root_dir, 'random_frag_vec', 'random_mol2vec_downsampled.csv')
     elif frag2vec_type == 'mol2vec':
         mol2vec_fp = os.path.join(root_dir, 'model_mol2vec', 'model_mol2vec_mol2vec.csv')
+    elif frag2vec_type == 'tandem':
+        mol2vec_fp = os.path.join(root_dir, 'result', 'step4_model_{}_mol2vec_downsampled.csv'.format(frag2vec_type))
 
     cid2frag_fp = os.path.join(root_dir, 'result', 'step1_result.txt')
     log_fp = os.path.join(result_dir, 'log.log')
@@ -116,8 +118,8 @@ if __name__ == '__main__':
                     sub_cid_list=list2dic(sample_result['test_set'].index.to_list()))
 
     if os.path.exists(mol2vec_fp):
-        ref_training_set_mol2vec_fp = os.path.join(root_dir, 'nn', 'x_training_set_mol2vec.csv')
-        ref_test_set_mol2vec_fp = os.path.join(root_dir, 'nn', 'x_test_set_mol2vec.csv')
+        ref_training_set_mol2vec_fp = os.path.join(root_dir, 'nn', 'parallel', 'x_training_set_mol2vec.csv')
+        ref_test_set_mol2vec_fp = os.path.join(root_dir, 'nn', 'parallel', 'x_test_set_mol2vec.csv')
 
         mol2vec = pd.read_csv(mol2vec_fp, index_col=0, header=None)
         ref_test_set_mol2vec = pd.read_csv(ref_test_set_mol2vec_fp, index_col=0, header=None)

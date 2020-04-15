@@ -135,6 +135,7 @@ if __name__ == '__main__':
     output_id2frag_refrag = False
     if not os.path.exists(result_file_id2frag_refrag):
         output_id2frag_refrag = True
+
     print('Start to generate fragment sentence by molecular tree...')
     with open(input_file, 'r') as input_f:
         counter = 0

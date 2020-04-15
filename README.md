@@ -72,7 +72,7 @@ python step2_refragment.py ./demo_data/step1_result.txt ./demo_data/ --log_fn ./
 ### 2.3 training model
 Training molFrag2vec model by FastText, and get the vectors of all fragments.
 ```shell script
-python training_frag_vec_model.py ./demo_data/step2_frag_id_sentence.csv ./demo_data/step3_molFrag2vec_demo.bin
+python step3_training_frag_vec_model.py ./demo_data/step2_frag_id_sentence.csv ./demo_data/step3_molFrag2vec_demo.bin
 ```
 #### output
 - step3_frag2vec_model_molFrag2vec.csv: fragment vectors
@@ -81,7 +81,7 @@ python training_frag_vec_model.py ./demo_data/step2_frag_id_sentence.csv ./demo_
 ### 2.4 calculating molecular vector
 Calculate molecular vector of selected molecules which have been classed by classyFire
 ```shell script
-python smiles2vec.py
+python step4_smiles2vec.py
 ```
 
 ### 2.5 clustering

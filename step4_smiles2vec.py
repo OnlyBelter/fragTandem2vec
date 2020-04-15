@@ -6,8 +6,8 @@ import os
 import numpy as np
 import pandas as pd
 from helper_func import get_mol_vec
-from mol2vec_related.helper_func import load_trained_model
-from mol2vec.features import MolSentence, DfVec, sentences2vec
+# from mol2vec_related.helper_func import load_trained_model
+# from mol2vec.features import MolSentence, DfVec, sentences2vec
 
 
 def get_fragment_by_cid(selected_cid_fp, all_train_cid_fp, fragment_fp, result_fp):
@@ -63,7 +63,7 @@ def get_fragment_by_cid(selected_cid_fp, all_train_cid_fp, fragment_fp, result_f
 
 
 if __name__ == '__main__':
-    frag2vec_type = 'random'   # random / parallel_frag2vec
+    frag2vec_type = 'parallel'   # random / parallel_frag2vec / tandem_frag2vec
     root_dir = 'big-data/moses_dataset/'
     result_dir = os.path.join(root_dir, 'result')
     # result_dir = 'big-data/moses_dataset/result'
@@ -73,9 +73,11 @@ if __name__ == '__main__':
     # result_fp2 = os.path.join(result_dir, 'step4_selected_cid2fragment_down_sampled_model_fragTandem2vec.csv')
     selected_cid_fp = os.path.join(result_dir, 'mol2md_downsampled_max_5000.csv')
     cid2frag_fp = os.path.join(result_dir, 'step1_result.txt')
-    frag2vec_file = os.path.join(root_dir, 'best_model', 'sub_ws_4_minn_1_maxn_2',
-                                           'frag2vec_ws_4_minn_1_maxn_2.csv')
-    result_file = os.path.join(result_dir, 'step4_model_parallel_mol2vec_downsampled.csv')
+    # frag2vec_file = os.path.join(root_dir, 'best_model', 'sub_ws_4_minn_1_maxn_2_parallel',
+    #                                        'frag2vec_ws_4_minn_1_maxn_2.csv')
+    frag2vec_file = os.path.join(root_dir, 'best_model', 'sub_ws_10_minn_1_maxn_2_tandem',
+                                 'frag2vec_ws_10_minn_1_maxn_2.csv')
+    result_file = os.path.join(result_dir, 'step4_model_{}_mol2vec_downsampled.csv'.format(frag2vec_type))
     log_fp = os.path.join(result_dir, 'step4_log.log')
     if frag2vec_type == 'random':
         # np.random.seed()

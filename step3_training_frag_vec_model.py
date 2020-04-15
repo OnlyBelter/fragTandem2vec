@@ -1,11 +1,11 @@
 """
 step3: Training molFrag2vec model by FastText, and get the vectors of all fragments.
 # usage: without supervised training
-$ python training_frag_vec_model.py big-data/moses_dataset/result/step2_parallel_frag_smiles_sentence.csv big-data/moses_dataset/result/
+$ python step3_training_frag_vec_model.py big-data/moses_dataset/result/step2_parallel_frag_smiles_sentence.csv big-data/moses_dataset/result/
  --model_fn step3_model_parallel2vec.bin --frag_vec_fn step3_model_parallel2vec.csv
 
 # usage: with supervised training
-$ python training_frag_vec_model.py big-data/moses_dataset/result/step2_parallel_frag_smiles_sentence.csv big-data/moses_dataset/result/
+$ python step3_training_frag_vec_model.py big-data/moses_dataset/result/step2_parallel_frag_smiles_sentence.csv big-data/moses_dataset/result/
  --model_fn step3_model_parallel2vec.bin --frag_vec_fn step3_model_parallel2vec.csv --supervised_training
 """
 

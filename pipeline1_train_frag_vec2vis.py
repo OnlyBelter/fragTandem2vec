@@ -11,7 +11,7 @@ import time
 import argparse
 import pandas as pd
 from pub_func import get_format_time
-from training_frag_vec_model import train_model, get_frag_vector
+from step3_training_frag_vec_model import train_model, get_frag_vector
 from sklearn.manifold import TSNE
 from helper_func import SELECTED_MD
 
@@ -72,7 +72,7 @@ if __name__ == '__main__':
         description='Training molFrag2vec model using FastText')
     parser.add_argument('input_fn', help='the file path of training set, frag_smiles_sentence')
     parser.add_argument('frag_info_fn', help='the file path of fragment infomation '
-                                             'which contains the numbor of selected MD')
+                                             'which contains the number of selected MD')
     parser.add_argument('result_dir', help='the directory of result files')
     # parser.add_argument('--model_fn', help='file name of trained model')
     # parser.add_argument('--frag_vec_fn', help='file name of fragment vector')
@@ -84,10 +84,10 @@ if __name__ == '__main__':
     frag_vec_fn = 'frag2vec_ws_{}_minn_{}_maxn_{}.csv'
 
     t0 = get_format_time()
-    # m_nn_set = set([(i, i*j) for i in range(1, 2) for j in range(4, 5)])
-    m_nn_set = {(1, 2)}
+    # m_nn_set = set([(i, i*j) for i in range(1, 3) for j in range(2, 5)])
     # m_nn_set = set([(i, j) for i in range(1,3) for j in range(2, 5)])
-    ws_list = [4]
+    m_nn_set = {(0, 0)}
+    ws_list = range(2, 11)
     for ws in ws_list:
         for m_nn in m_nn_set:
             ws = ws
