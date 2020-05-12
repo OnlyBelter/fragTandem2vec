@@ -86,9 +86,9 @@ def nn_model_regression(x, y, result_dir):
 
 if __name__ == '__main__':
     model_type = 'regression'  # classification
-    frag2vec_type = 'tandem'   # random / parallel_frag2vec / mol2vec (model name) / tandem_frag2vec
+    frag2vec_type = 'mol2vec'   # random / parallel_frag2vec / mol2vec (model name) / tandem_frag2vec
     root_dir = './big-data/moses_dataset/'
-    result_dir = './big-data/moses_dataset/nn/tandem'
+    result_dir = None
     mol2md_info_file = './big-data/moses_dataset/result/mol2md_downsampled_max_5000.csv'
     frag2vec_file = os.path.join(root_dir, 'best_model', 'sub_ws_4_minn_1_maxn_2_parallel',
                                  'frag2vec_ws_4_minn_1_maxn_2.csv')
@@ -96,10 +96,13 @@ if __name__ == '__main__':
     ref_training_set_mol2vec_fp = None
     ref_test_set_mol2vec_fp = None
     if frag2vec_type == 'random':
+        result_dir = './big-data/moses_dataset/random_frag_vec'
         mol2vec_fp = os.path.join(root_dir, 'random_frag_vec', 'random_mol2vec_downsampled.csv')
     elif frag2vec_type == 'mol2vec':
-        mol2vec_fp = os.path.join(root_dir, 'model_mol2vec', 'model_mol2vec_mol2vec.csv')
+        result_dir = './big-data/moses_dataset/model_mol2vec'
+        mol2vec_fp = os.path.join(root_dir, 'model_mol2vec', 'model_mol2vec_mol2vec_trained_by_all_MOSES.csv')
     elif frag2vec_type == 'tandem':
+        result_dir = './big-data/moses_dataset/nn/tandem'
         mol2vec_fp = os.path.join(root_dir, 'result', 'step4_model_{}_mol2vec_downsampled.csv'.format(frag2vec_type))
 
     cid2frag_fp = os.path.join(root_dir, 'result', 'step1_result.txt')

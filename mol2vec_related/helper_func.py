@@ -76,46 +76,46 @@ def _parallel_job(smiles, r):
         return " ".join(sentence)
 
 
-def mol2alt_sentence(mol, radius):
-    """Same as mol2sentence() expect it only returns the alternating sentence
-    Calculates ECFP (Morgan fingerprint) and returns identifiers of substructures as 'sentence' (string).
-    Returns a tuple with 1) a list with sentence for each radius and 2) a sentence with identifiers from all radii
-    combined.
-    NOTE: Words are ALWAYS reordered according to atom order in the input mol object.
-    NOTE: Due to the way how Morgan FPs are generated, number of identifiers at each radius is smaller
-
-    Parameters
-    ----------
-    mol : rdkit.Chem.rdchem.Mol
-    radius : float
-        Fingerprint radius
-
-    Returns
-    -------
-    list
-        alternating sentence
-    combined
-    """
-    radii = list(range(int(radius) + 1))
-    info = {}
-    _ = AllChem.GetMorganFingerprint(mol, radius, bitInfo=info)  # info: dictionary identifier, atom_idx, radius
-
-    mol_atoms = [a.GetIdx() for a in mol.GetAtoms()]
-    dict_atoms = {x: {r: None for r in radii} for x in mol_atoms}
-
-    for element in info:
-        for atom_idx, radius_at in info[element]:
-            dict_atoms[atom_idx][radius_at] = element  # {atom number: {fp radius: identifier}}
-
-    # merge identifiers alternating radius to sentence: atom 0 radius0, atom 0 radius 1, etc.
-    identifiers_alt = []
-    for atom in dict_atoms:  # iterate over atoms
-        for r in radii:  # iterate over radii
-            identifiers_alt.append(dict_atoms[atom][r])
-
-    alternating_sentence = map(str, [x for x in identifiers_alt if x])
-
-    return list(alternating_sentence)
+# def mol2alt_sentence(mol, radius):
+#     """Same as mol2sentence() expect it only returns the alternating sentence
+#     Calculates ECFP (Morgan fingerprint) and returns identifiers of substructures as 'sentence' (string).
+#     Returns a tuple with 1) a list with sentence for each radius and 2) a sentence with identifiers from all radii
+#     combined.
+#     NOTE: Words are ALWAYS reordered according to atom order in the input mol object.
+#     NOTE: Due to the way how Morgan FPs are generated, number of identifiers at each radius is smaller
+#
+#     Parameters
+#     ----------
+#     mol : rdkit.Chem.rdchem.Mol
+#     radius : float
+#         Fingerprint radius
+#
+#     Returns
+#     -------
+#     list
+#         alternating sentence
+#     combined
+#     """
+#     radii = list(range(int(radius) + 1))
+#     info = {}
+#     _ = AllChem.GetMorganFingerprint(mol, radius, bitInfo=info)  # info: dictionary identifier, atom_idx, radius
+#
+#     mol_atoms = [a.GetIdx() for a in mol.GetAtoms()]
+#     dict_atoms = {x: {r: None for r in radii} for x in mol_atoms}
+#
+#     for element in info:
+#         for atom_idx, radius_at in info[element]:
+#             dict_atoms[atom_idx][radius_at] = element  # {atom number: {fp radius: identifier}}
+#
+#     # merge identifiers alternating radius to sentence: atom 0 radius0, atom 0 radius 1, etc.
+#     identifiers_alt = []
+#     for atom in dict_atoms:  # iterate over atoms
+#         for r in radii:  # iterate over radii
+#             identifiers_alt.append(dict_atoms[atom][r])
+#
+#     alternating_sentence = map(str, [x for x in identifiers_alt if x])
+#
+#     return list(alternating_sentence)
 
 
 def _read_corpus(file_name):
@@ -215,31 +215,36 @@ def load_trained_model(model_fp):
 
 
 if __name__ == '__main__':
-    # cid2smiles.txt = '../big-data/all_cid2smiles/all_data_set_CID2Canonical_SMILES.txt'
+    # use all SMILES in MOSES data-set to train mol2vec model
+    cid2smiles_fp = '../big-data/moses_dataset/all_cid2smiles_moses.csv'
     # cid_list = '../big-data/all_cid2smiles/step5_x_training_set.csv'
     root_dir = '../big-data/moses_dataset/model_mol2vec/'
     result_file_path1 = os.path.join('../big-data/moses_dataset/nn/parallel/cid2smiles_all_in_train_test.csv')
     result_file_path2 = os.path.join(root_dir, 'cid2smiles_training_set_coupus.tmp')
     result_file_path3 = os.path.join(root_dir, 'cid2smiles_training_set_coupus.txt')
-    mol2vec_fp = os.path.join(root_dir, 'model_mol2vec_mol2vec.csv')
-    model_fp = os.path.join(root_dir, 'mol2vec_model.pkl')
+
+    # downsampled couspus, as order as file in result_file_path1
+    dowmsampled_coupus_fp = os.path.join(root_dir, 'downsampled', 'cid2smiles_training_set_coupus.txt')
+    mol2vec_fp = os.path.join(root_dir, 'model_mol2vec_mol2vec_trained_by_all_MOSES.csv')
+    model_fp = os.path.join(root_dir, 'mol2vec_model_trained_by_all_MOSES.pkl')
     # cid2smiles_test = '../big-data/cid2smiles_test.txt'
     # result_file_path4 = '../big-data/vectors/mol2vec_model_mol2vec.csv'
     # get_cid2smiles(cid2smiles.txt, cid_list, result_file=reuslt_file_path1)
 
-    # step1 generate corpus (sentence)
-    generate_corpus_from_smiles(in_file=result_file_path1, out_file=result_file_path2, r=1, n_jobs=4)
-
-    # step2 Handling of uncommon "words"
-    insert_unk(corpus=result_file_path2, out_corpus=result_file_path3)
-
-    # step3 train molecule vector
-    train_word2vec_model(infile_name=result_file_path3, outfile_name=model_fp,
-                         vector_size=100, window=10, min_count=3, n_jobs=4, method='cbow')
+    # # step1 generate corpus (sentence)
+    # generate_corpus_from_smiles(in_file=cid2smiles_fp, out_file=result_file_path2, r=1, n_jobs=4)
+    #
+    # # step2 Handling of uncommon "words"
+    # insert_unk(corpus=result_file_path2, out_corpus=result_file_path3)
+    #
+    # # step3 train molecule vector
+    # train_word2vec_model(infile_name=result_file_path3, outfile_name=model_fp,
+    #                      vector_size=100, window=10, min_count=3, n_jobs=4, method='cbow')
 
     # get vector of each molecule by mol2vec model
     # mol with fragment id sentence
-    mol_info = pd.read_csv(result_file_path3, header=None)
+    print('Start to read downsampled mol sentences and load model...')
+    mol_info = pd.read_csv(dowmsampled_coupus_fp, header=None)
 
     # model_fp = os.path.join(include_small_dataset_dir, 'mol2vec_related', 'mol2vec_model.pkl')
     model = load_trained_model(model_fp)
